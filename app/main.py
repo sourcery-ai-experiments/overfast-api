@@ -19,11 +19,9 @@ from .routers import gamemodes, heroes, maps, players, roles
 @asynccontextmanager
 async def lifespan(_: FastAPI):  # pragma: no cover
     # Update search data list from Blizzard before starting up
-    if settings.redis_caching_enabled:
-        logger.info("Updating search data cache (avatars, namecards, titles)")
-        with suppress(SystemExit):
-            update_search_data_cache()
-
+    logger.info("Updating search data cache (avatars, namecards, titles)")
+    with suppress(SystemExit):
+        update_search_data_cache()
     yield
 
 

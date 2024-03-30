@@ -49,11 +49,6 @@ class Settings(BaseSettings):
     # REDIS CONFIGURATION
     ############
 
-    # Whether or not you want to use Redis as a cache system for the API. Mainly
-    # used to avoid useless calls to Blizzard HTML pages (profiles can take from
-    # 2 to 5 seconds to load...). Enabled by default.
-    redis_caching_enabled: bool = True
-
     # Redis server host
     redis_host: str = "127.0.0.1"
 

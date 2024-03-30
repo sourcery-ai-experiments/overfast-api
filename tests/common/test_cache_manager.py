@@ -52,68 +52,39 @@ def test_get_cache_key_from_request(
 
 
 @pytest.mark.parametrize(
-    ("is_redis_server_up", "cache_key", "value", "expire", "sleep_time", "expected"),
+    ("cache_key", "value", "expire", "sleep_time", "expected"),
     [
-        (True, "/heroes", [{"name": "Sojourn"}], 10, None, b'[{"name":"Sojourn"}]'),
-        (True, "/heroes", [{"name": "Sojourn"}], 1, 1, None),
-        (False, "/heroes", [{"name": "Sojourn"}], 10, None, None),
-        (False, "/heroes", [{"name": "Sojourn"}], 1, 1, None),
+        ("/heroes", [{"name": "Sojourn"}], 10, None, b'[{"name":"Sojourn"}]'),
+        ("/heroes", [{"name": "Sojourn"}], 1, 1, None),
     ],
 )
 def test_update_and_get_api_cache(
     cache_manager: CacheManager,
-    is_redis_server_up: bool,
     cache_key: str,
     value: list,
     expire: int,
     sleep_time: int | None,
     expected: str | None,
 ):
-    with patch(
-        "app.common.cache_manager.CacheManager.is_redis_server_up",
-        is_redis_server_up,
-    ):
-        # Assert the value is not here before update
-        assert cache_manager.get_api_cache(cache_key) is None
+    # Assert the value is not here before update
+    assert cache_manager.get_api_cache(cache_key) is None
 
-        # Update the API Cache and sleep if needed
-        cache_manager.update_api_cache(cache_key, value, expire)
-        if sleep_time:
-            sleep(sleep_time)
+    # Update the API Cache and sleep if needed
+    cache_manager.update_api_cache(cache_key, value, expire)
+    if sleep_time:
+        sleep(sleep_time)
 
-        # Assert the value matches
-        assert cache_manager.get_api_cache(cache_key) == expected
-        assert cache_manager.get_api_cache("another_cache_key") is None
+    # Assert the value matches
+    assert cache_manager.get_api_cache(cache_key) == expected
+    assert cache_manager.get_api_cache("another_cache_key") is None
 
 
-@pytest.mark.parametrize(
-    ("is_redis_server_up", "cache_key", "parser_data"),
-    [
-        (
-            True,
-            "/heroes",
-            [{"name": "Sojourn"}],
-        ),
-        (
-            False,
-            "/heroes",
-            [{"name": "Sojourn"}],
-        ),
-    ],
-)
-def test_update_and_get_parser_cache(
-    cache_manager: CacheManager,
-    is_redis_server_up: bool,
-    cache_key: str,
-    parser_data: str,
-):
+def test_update_and_get_parser_cache(cache_manager: CacheManager):
+    cache_key = "/heroes"
+    parser_data = [{"name": "Sojourn"}]
     timeout_value = 10
 
     with (
-        patch(
-            "app.common.cache_manager.CacheManager.is_redis_server_up",
-            is_redis_server_up,
-        ),
         patch(
             "app.common.cache_manager.settings.parser_cache_expiration_spreading_percentage",
             25,
@@ -130,67 +101,42 @@ def test_update_and_get_parser_cache(
         cache_manager.update_parser_cache(cache_key, parser_data, timeout_value)
 
         # Assert the value matches
-        assert cache_manager.get_parser_cache(cache_key) == (
-            parser_data if is_redis_server_up else None
+        assert cache_manager.get_parser_cache(cache_key) == parser_data
+
+        # Assert the randint method has been called with the right parameters
+        randint_mock.assert_called_once_with(
+            int((75 / 100) * timeout_value),  # 100 - 25%
+            int((125 / 100) * timeout_value),  # 100 + 25%
         )
 
-        # Assert the randint method has been called with the right parameters,
-        # or hasn't been called at all, depending if redis server is up
-        if is_redis_server_up:
-            randint_mock.assert_called_once_with(
-                int((75 / 100) * timeout_value),  # 100 - 25%
-                int((125 / 100) * timeout_value),  # 100 + 25%
-            )
-        else:
-            randint_mock.assert_not_called()
 
-
-@pytest.mark.parametrize(
-    ("is_redis_server_up", "expected"),
-    [
-        (
-            True,
-            {
-                f"GamemodesParser-{settings.blizzard_host}/{locale}{settings.home_path}",
-                f"HeroesParser-{settings.blizzard_host}/{locale}{settings.heroes_path}",
-            },
-        ),
-        (False, set()),
-    ],
-)
 def test_get_soon_expired_cache_keys(
     cache_manager: CacheManager,
-    is_redis_server_up: bool,
-    expected: set[str],
 ):
-    with patch(
-        "app.common.cache_manager.CacheManager.is_redis_server_up",
-        is_redis_server_up,
-    ):
-        cache_manager.update_parser_cache(
-            f"HeroParser-{settings.blizzard_host}/{locale}{settings.heroes_path}/ana",
-            {},
-            settings.expired_cache_refresh_limit + 5,
-        )
-        cache_manager.update_parser_cache(
-            f"GamemodesParser-{settings.blizzard_host}/{locale}{settings.home_path}",
-            [],
-            settings.expired_cache_refresh_limit - 5,
-        )
-        cache_manager.update_parser_cache(
-            f"HeroesParser-{settings.blizzard_host}/{locale}{settings.heroes_path}",
-            [{"name": "Sojourn"}],
-            settings.expired_cache_refresh_limit - 10,
-        )
+    cache_manager.update_parser_cache(
+        f"HeroParser-{settings.blizzard_host}/{locale}{settings.heroes_path}/ana",
+        {},
+        settings.expired_cache_refresh_limit + 5,
+    )
+    cache_manager.update_parser_cache(
+        f"GamemodesParser-{settings.blizzard_host}/{locale}{settings.home_path}",
+        [],
+        settings.expired_cache_refresh_limit - 5,
+    )
+    cache_manager.update_parser_cache(
+        f"HeroesParser-{settings.blizzard_host}/{locale}{settings.heroes_path}",
+        [{"name": "Sojourn"}],
+        settings.expired_cache_refresh_limit - 10,
+    )
 
-        assert (
-            set(
-                cache_manager.get_soon_expired_cache_keys(
-                    settings.parser_cache_key_prefix,
-                ),
-            )
-            == expected
-        )
+    assert set(
+        cache_manager.get_soon_expired_cache_keys(
+            settings.parser_cache_key_prefix,
+        ),
+    ) == {
+        f"GamemodesParser-{settings.blizzard_host}/{locale}{settings.home_path}",
+        f"HeroesParser-{settings.blizzard_host}/{locale}{settings.heroes_path}",
+    }
 
 
 def test_redis_connection_error(cache_manager: CacheManager):

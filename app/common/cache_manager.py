@@ -44,15 +44,7 @@ class CacheManager(metaclass=Singleton):
     """
 
     # Redis server global variable
-    redis_server = (
-        redis.Redis(host=settings.redis_host, port=settings.redis_port)
-        if settings.redis_caching_enabled
-        else None
-    )
-
-    # Whenever we encounter an error on Redis connection, this variable is set
-    # to False to prevent trying to reach the Redis server multiple times.
-    is_redis_server_up = settings.redis_caching_enabled
+    redis_server = redis.Redis(host=settings.redis_host, port=settings.redis_port)
 
     @staticmethod
     def log_warning(err: redis.exceptions.RedisError) -> None:
@@ -72,8 +64,6 @@ class CacheManager(metaclass=Singleton):
         """
 
         def wrapper(self, *args, **kwargs):
-            if not self.is_redis_server_up:
-                return None
             try:
                 return func(self, *args, **kwargs)
             except redis.exceptions.RedisError as err:
@@ -132,10 +122,6 @@ class CacheManager(metaclass=Singleton):
     def get_soon_expired_cache_keys(self, cache_key_prefix: str) -> Iterator[str]:
         """Get a set of cache keys for values in cache which will expire soon, meaning
         the associated TTL is close to expiration. Only returns the key suffix."""
-        if not self.is_redis_server_up:
-            yield from ()
-            return
-
         try:
             cache_keys = self.redis_server.keys(pattern=f"{cache_key_prefix}:*")
         except redis.exceptions.RedisError as err:
