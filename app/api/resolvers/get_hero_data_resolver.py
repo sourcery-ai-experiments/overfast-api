@@ -20,6 +20,21 @@ class GetHeroDataResolver(BaseDataResolver):
     parser_classes: ClassVar[list] = [HeroParser, HeroesParser, HeroesStatsParser]
     timeout = settings.hero_path_cache_timeout
 
+    def fetch_data_from_database(self, **kwargs) -> None:
+        # Fetch hero data in db, store it in self.data
+        # Filters are always being used here, list heroes = role filter
+        pass
+
+    def fetch_process_store_data(self, **kwargs) -> None:
+        # self.data = already fetched data
+        # Fetchers ? HeroesListFetcher, SpecificHeroFetcher, etc.
+        # if not portrait_value (no key at all)
+        # Fetch heroes list
+        # if not single
+        # Fetch single hero Blizzard page, store in DB
+        # if not some csv data for some reason (hitpoints key)
+        # Fetch CSV data
+
     def merge_parsers_data(self, parsers_data: list[dict], **kwargs) -> dict:
         """Merge parsers data together :
         - HeroParser for detailed data

@@ -22,6 +22,7 @@ async def lifespan(_: FastAPI):  # pragma: no cover
     logger.info("Updating search data cache (avatars, namecards, titles)")
     with suppress(SystemExit):
         update_search_data_cache()
+        # TODO : update DB from CSV data
     yield
 
 

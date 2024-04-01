@@ -15,3 +15,11 @@ class ListHeroesDataResolver(BaseDataResolver):
 
     parser_classes: ClassVar[list] = [HeroesParser]
     timeout = settings.heroes_path_cache_timeout
+
+    def fetch_data_from_database(self, **kwargs):
+        # Filters are always being used here, list heroes = role filter
+        pass
+
+    def fetch_process_store_data(self, **kwargs):
+        # Fetch ALL heroes, regardless of filter
+        pass
