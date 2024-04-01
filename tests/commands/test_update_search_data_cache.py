@@ -5,8 +5,8 @@ import pytest
 from fastapi import status
 
 from app.commands.update_search_data_cache import main as update_search_data_cache_main
-from app.common.cache_manager import CacheManager
-from app.common.enums import SearchDataType
+from app.database.cache_manager import CacheManager
+from app.utils.enums import SearchDataType
 
 
 @pytest.fixture()
@@ -49,7 +49,7 @@ def test_update_search_data_request_error(
     with (
         patch("httpx.get", side_effect=httpx.RequestError("error")),
         patch(
-            "app.common.logging.logger.exception",
+            "app.utils.logging.logger.exception",
             logger_exception_mock,
         ),
         pytest.raises(SystemExit),
@@ -72,7 +72,7 @@ def test_update_search_data_cache_not_found(cache_manager: CacheManager):
             return_value=Mock(status_code=status.HTTP_200_OK, text="OK"),
         ),
         patch(
-            "app.common.logging.logger.exception",
+            "app.utils.logging.logger.exception",
             logger_exception_mock,
         ),
         pytest.raises(
@@ -131,7 +131,7 @@ def test_update_search_data_cache_invalid_json(
             ),
         ),
         patch(
-            "app.common.logging.logger.exception",
+            "app.utils.logging.logger.exception",
             logger_exception_mock,
         ),
         pytest.raises(

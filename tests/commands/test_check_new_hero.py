@@ -4,8 +4,8 @@ import pytest
 from fastapi import status
 
 from app.commands.check_new_hero import main as check_new_hero_main
-from app.common.enums import HeroKey
-from app.common.helpers import overfast_client
+from app.utils.enums import HeroKey
+from app.utils.helpers import overfast_client
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -25,7 +25,7 @@ def test_check_no_new_hero(heroes_html_data: str):
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=heroes_html_data),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         check_new_hero_main()
 
@@ -39,7 +39,7 @@ def test_check_discord_webhook_disabled():
             "app.commands.check_new_hero.settings.discord_webhook_enabled",
             False,
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
         pytest.raises(
             SystemExit,
         ),
@@ -64,7 +64,7 @@ def test_check_new_heroes(distant_heroes: set[str], expected: set[str]):
             "app.commands.check_new_hero.get_distant_hero_keys",
             return_value={*HeroKey, *distant_heroes},
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         check_new_hero_main()
 
@@ -82,7 +82,7 @@ def test_check_error_from_blizzard():
                 text="Internal Server Error",
             ),
         ),
-        patch("app.common.logging.logger.error", logger_error_mock),
+        patch("app.utils.logging.logger.error", logger_error_mock),
         pytest.raises(
             SystemExit,
         ),

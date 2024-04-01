@@ -8,9 +8,9 @@ from httpx import TimeoutException
 
 from app.commands.check_and_update_cache import get_soon_expired_cache_keys
 from app.commands.check_and_update_cache import main as check_and_update_cache_main
-from app.common.cache_manager import CacheManager
-from app.common.enums import Locale
-from app.common.helpers import overfast_client
+from app.database.cache_manager import CacheManager
+from app.utils.enums import Locale
+from app.utils.helpers import overfast_client
 from app.config import settings
 
 
@@ -27,7 +27,7 @@ def locale():
 @pytest.fixture(autouse=True)
 def _set_no_spread_percentage():
     with patch(
-        "app.common.cache_manager.settings.parser_cache_expiration_spreading_percentage",
+        "app.database.cache_manager.settings.parser_cache_expiration_spreading_percentage",
         0,
     ):
         yield
@@ -68,7 +68,7 @@ def test_check_and_update_gamemodes_cache_to_update(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=home_html_data),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -113,7 +113,7 @@ def test_check_and_update_specific_hero_to_update(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=hero_html_data),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -148,7 +148,7 @@ def test_check_and_update_maps_to_update(
 
     # check and update (only maps should be updated)
     logger_info_mock = Mock()
-    with patch("app.common.logging.logger.info", logger_info_mock):
+    with patch("app.utils.logging.logger.info", logger_info_mock):
         asyncio.run(check_and_update_cache_main())
 
     # Check data in db (assert we created API Cache for subroutes)
@@ -180,7 +180,7 @@ def test_check_and_update_cache_no_update(cache_manager: CacheManager, locale: s
 
     # check and update (no update)
     logger_info_mock = Mock()
-    with patch("app.common.logging.logger.info", logger_info_mock):
+    with patch("app.utils.logging.logger.info", logger_info_mock):
         asyncio.run(check_and_update_cache_main())
 
     logger_info_mock.assert_any_call("Done ! Retrieved keys : {}", 0)
@@ -227,7 +227,7 @@ def test_check_and_update_specific_player_to_update(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=player_html_data),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -283,7 +283,7 @@ def test_check_and_update_player_stats_summary_to_update(
                 text=player_html_data,
             ),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -317,7 +317,7 @@ def test_check_internal_error_from_blizzard(cache_manager: CacheManager, locale:
                 text="Internal Server Error",
             ),
         ),
-        patch("app.common.logging.logger.error", logger_error_mock),
+        patch("app.utils.logging.logger.error", logger_error_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -346,7 +346,7 @@ def test_check_timeout_from_blizzard(cache_manager: CacheManager, locale: str):
                 "Read timed out. (read timeout=10)",
             ),
         ),
-        patch("app.common.logging.logger.error", logger_error_mock),
+        patch("app.utils.logging.logger.error", logger_error_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -382,7 +382,7 @@ def test_check_parser_parsing_error(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=player_attr_error),
         ),
-        patch("app.common.logging.logger.critical", logger_critical_mock),
+        patch("app.utils.logging.logger.critical", logger_critical_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -413,7 +413,7 @@ def test_check_parser_init_error(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=player_html_data),
         ),
-        patch("app.common.logging.logger.exception", logger_exception_mock),
+        patch("app.utils.logging.logger.exception", logger_exception_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -454,7 +454,7 @@ def test_check_and_update_several_to_update(
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text=home_html_data),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 
@@ -511,7 +511,7 @@ def test_check_and_update_namecard_to_update(
                 json=lambda: search_tekrop_blizzard_json_data,
             ),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         asyncio.run(check_and_update_cache_main())
 

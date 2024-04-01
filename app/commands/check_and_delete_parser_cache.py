@@ -2,9 +2,9 @@
 from API since a certain amount of time. It can be run in the background.
 """
 
-from app.common.cache_manager import CacheManager
-from app.common.logging import logger
 from app.config import settings
+from app.database.cache_manager import CacheManager
+from app.utils.logging import logger
 
 # Generic cache manager used in the process
 cache_manager = CacheManager()

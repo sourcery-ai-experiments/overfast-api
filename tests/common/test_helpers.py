@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from app.common import helpers
+from app.utils import helpers
 
 
 @pytest.mark.parametrize(

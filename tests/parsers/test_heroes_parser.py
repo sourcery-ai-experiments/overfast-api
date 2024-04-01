@@ -2,9 +2,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from app.common.enums import HeroKey
-from app.common.exceptions import OverfastError
-from app.common.helpers import overfast_client
+from app.utils.enums import HeroKey
+from app.api.exceptions import OverfastError
+from app.utils.helpers import overfast_client
 from app.parsers.heroes_parser import HeroesParser
 
 

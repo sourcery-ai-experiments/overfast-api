@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.common.enums import MapGamemode
+from app.utils.enums import MapGamemode
 from app.config import settings
 from app.main import app
 

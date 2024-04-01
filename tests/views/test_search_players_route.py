@@ -6,8 +6,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import TimeoutException
 
-from app.common.cache_manager import CacheManager
-from app.common.helpers import overfast_client
+from app.database.cache_manager import CacheManager
+from app.utils.helpers import overfast_client
 from app.main import app
 
 client = TestClient(app)
@@ -178,7 +178,7 @@ def test_search_players_ordering(
 
 def test_search_players_internal_error():
     with patch(
-        "app.handlers.search_players_request_handler.SearchPlayersRequestHandler.process_request",
+        "app.handlers.search_players_request_handler.SearchPlayersDataResolver.process_query",
         return_value={"invalid_key": "invalid_value"},
     ):
         response = client.get("/players?name=Test")

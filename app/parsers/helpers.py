@@ -4,9 +4,9 @@ import re
 import unicodedata
 from functools import cache
 
-from app.common.enums import CompetitiveDivision, CompetitiveRole, HeroKey, Role
-from app.common.helpers import read_csv_data_file
 from app.config import settings
+from app.utils.enums import CompetitiveDivision, CompetitiveRole, HeroKey, Role
+from app.utils.helpers import read_csv_data_file
 
 
 def get_computed_stat_value(input_str: str) -> str | float | int:

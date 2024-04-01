@@ -1,6 +1,6 @@
 import pytest
 
-from app.common.exceptions import OverfastError
+from app.api.exceptions import OverfastError
 from app.parsers.maps_parser import MapsParser
 
 

@@ -4,7 +4,7 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.common.helpers import overfast_client
+from app.utils.helpers import overfast_client
 from app.main import app
 
 client = TestClient(app)
@@ -29,7 +29,7 @@ def test_get_gamemodes(gamemodes_json_data: list):
 def test_get_gamemodes_internal_error():
     with patch(
         "app.handlers.list_gamemodes_request_handler."
-        "ListGamemodesRequestHandler.process_request",
+        "ListGamemodesDataResolver.process_query",
         return_value=[{"invalid_key": "invalid_value"}],
     ):
         response = client.get("/gamemodes")

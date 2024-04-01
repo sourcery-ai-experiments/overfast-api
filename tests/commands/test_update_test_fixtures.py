@@ -6,8 +6,8 @@ from fastapi import status
 from httpx import AsyncClient
 
 from app.commands.update_test_fixtures import main as update_test_fixtures_main
-from app.common.enums import HeroKey
-from app.common.helpers import players_ids
+from app.utils.enums import HeroKey
+from app.utils.helpers import players_ids
 from app.config import settings
 
 
@@ -18,7 +18,7 @@ def _setup_update_test_fixtures_test():
             "app.commands.update_test_fixtures.save_fixture_file",
             return_value=Mock(),
         ),
-        patch("app.common.logging.logger.debug"),
+        patch("app.utils.logging.logger.debug"),
     ):
         yield
 
@@ -68,11 +68,11 @@ def test_update_with_different_options(parameters, expected_calls: list[str]):
             return_value=Mock(status_code=status.HTTP_200_OK, text="HTML_DATA"),
         ),
         patch(
-            "app.common.logging.logger.info",
+            "app.utils.logging.logger.info",
             logger_info_mock,
         ),
         patch(
-            "app.common.logging.logger.error",
+            "app.utils.logging.logger.error",
             logger_error_mock,
         ),
     ):
@@ -100,11 +100,11 @@ def test_update_with_blizzard_error():
             ),
         ),
         patch(
-            "app.common.logging.logger.info",
+            "app.utils.logging.logger.info",
             Mock(),
         ),
         patch(
-            "app.common.logging.logger.error",
+            "app.utils.logging.logger.error",
             logger_error_mock,
         ),
     ):

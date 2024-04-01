@@ -13,7 +13,7 @@ from .commands.update_search_data_cache import update_search_data_cache
 from .common.enums import RouteTag
 from .common.logging import logger
 from .config import settings
-from .routers import gamemodes, heroes, maps, players, roles
+from .routes import gamemodes, heroes, maps, players, roles
 
 
 @asynccontextmanager

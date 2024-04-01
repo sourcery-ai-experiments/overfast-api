@@ -2,8 +2,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from app.common.exceptions import ParserBlizzardError
-from app.common.helpers import overfast_client, players_ids
+from app.api.exceptions import ParserBlizzardError
+from app.utils.helpers import overfast_client, players_ids
 from app.parsers.player_career_parser import PlayerCareerParser
 
 

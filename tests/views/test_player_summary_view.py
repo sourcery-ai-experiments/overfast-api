@@ -6,7 +6,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import TimeoutException
 
-from app.common.helpers import overfast_client, players_ids
+from app.utils.helpers import overfast_client, players_ids
 from app.main import app
 
 client = TestClient(app)
@@ -93,7 +93,7 @@ def test_get_player_summary_blizzard_timeout():
 
 def test_get_player_summary_internal_error():
     with patch(
-        "app.handlers.get_player_career_request_handler.GetPlayerCareerRequestHandler.process_request",
+        "app.handlers.get_player_career_request_handler.GetPlayerCareerDataResolver.process_query",
         return_value={"invalid_key": "invalid_value"},
     ):
         response = client.get("/players/TeKrop-2217/summary")

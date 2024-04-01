@@ -7,11 +7,11 @@ import asyncio
 
 from fastapi import HTTPException
 
-from app.common.enums import HeroKey
-from app.common.helpers import send_discord_webhook_message
-from app.common.logging import logger
 from app.config import settings
 from app.parsers.heroes_parser import HeroesParser
+from app.utils.enums import HeroKey
+from app.utils.helpers import send_discord_webhook_message
+from app.utils.logging import logger
 
 
 def get_distant_hero_keys() -> set[str]:

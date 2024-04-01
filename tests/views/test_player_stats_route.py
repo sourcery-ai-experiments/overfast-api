@@ -6,8 +6,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import TimeoutException
 
-from app.common.enums import HeroKeyCareerFilter, PlayerGamemode, PlayerPlatform
-from app.common.helpers import overfast_client
+from app.utils.enums import HeroKeyCareerFilter, PlayerGamemode, PlayerPlatform
+from app.utils.helpers import overfast_client
 from app.main import app
 
 client = TestClient(app)
@@ -161,7 +161,7 @@ def test_get_player_stats_blizzard_timeout(uri: str):
 
 def test_get_player_stats_internal_error():
     with patch(
-        "app.handlers.get_player_career_request_handler.GetPlayerCareerRequestHandler.process_request",
+        "app.handlers.get_player_career_request_handler.GetPlayerCareerDataResolver.process_query",
         return_value={
             "ana": [{"category": "invalid_value", "stats": [{"key": "test"}]}],
         },

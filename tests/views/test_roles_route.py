@@ -4,7 +4,7 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.common.helpers import overfast_client
+from app.utils.helpers import overfast_client
 from app.main import app
 
 client = TestClient(app)
@@ -54,7 +54,7 @@ def test_get_roles_blizzard_error():
 
 def test_get_roles_internal_error():
     with patch(
-        "app.handlers.list_roles_request_handler.ListRolesRequestHandler.process_request",
+        "app.handlers.list_roles_request_handler.ListRolesDataResolver.process_query",
         return_value=[{"invalid_key": "invalid_value"}],
     ):
         response = client.get("/roles")

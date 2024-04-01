@@ -5,8 +5,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import TimeoutException
 
-from app.common.enums import PlayerGamemode, PlayerPlatform
-from app.common.helpers import overfast_client, read_json_file
+from app.utils.enums import PlayerGamemode, PlayerPlatform
+from app.utils.helpers import overfast_client, read_json_file
 from app.main import app
 
 client = TestClient(app)
@@ -98,7 +98,7 @@ def test_get_player_stats_blizzard_timeout():
 
 def test_get_player_stats_internal_error():
     with patch(
-        "app.handlers.get_player_stats_summary_request_handler.GetPlayerStatsSummaryRequestHandler.process_request",
+        "app.handlers.get_player_stats_summary_request_handler.GetPlayerStatsSummaryDataResolver.process_query",
         return_value={
             "general": [{"category": "invalid_value", "stats": [{"key": "test"}]}],
         },

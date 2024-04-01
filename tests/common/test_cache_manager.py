@@ -5,8 +5,8 @@ import pytest
 from fastapi import Request
 from redis.exceptions import RedisError
 
-from app.common.cache_manager import CacheManager
-from app.common.enums import Locale, SearchDataType
+from app.database.cache_manager import CacheManager
+from app.utils.enums import Locale, SearchDataType
 from app.config import settings
 
 
@@ -23,7 +23,7 @@ def locale():
 @pytest.fixture(autouse=True)
 def _set_no_spread_percentage():
     with patch(
-        "app.common.cache_manager.settings.parser_cache_expiration_spreading_percentage",
+        "app.database.cache_manager.settings.parser_cache_expiration_spreading_percentage",
         0,
     ):
         yield
@@ -86,11 +86,11 @@ def test_update_and_get_parser_cache(cache_manager: CacheManager):
 
     with (
         patch(
-            "app.common.cache_manager.settings.parser_cache_expiration_spreading_percentage",
+            "app.database.cache_manager.settings.parser_cache_expiration_spreading_percentage",
             25,
         ),
         patch(
-            "app.common.helpers.randint",
+            "app.utils.helpers.randint",
             Mock(side_effect=lambda min_value, _: min_value),
         ) as randint_mock,
     ):
@@ -147,7 +147,7 @@ def test_redis_connection_error(cache_manager: CacheManager):
         f"HeroesParser-{settings.blizzard_host}/{locale}{settings.heroes_path}"
     )
     with patch(
-        "app.common.cache_manager.redis.Redis.get",
+        "app.database.cache_manager.redis.Redis.get",
         side_effect=redis_connection_error,
     ):
         cache_manager.update_parser_cache(
@@ -158,7 +158,7 @@ def test_redis_connection_error(cache_manager: CacheManager):
         assert cache_manager.get_parser_cache(heroes_cache_key) is None
 
     with patch(
-        "app.common.cache_manager.redis.Redis.keys",
+        "app.database.cache_manager.redis.Redis.keys",
         side_effect=redis_connection_error,
     ):
         assert not set(
@@ -166,7 +166,7 @@ def test_redis_connection_error(cache_manager: CacheManager):
         )
 
     with patch(
-        "app.common.cache_manager.redis.Redis.ttl",
+        "app.database.cache_manager.redis.Redis.ttl",
         side_effect=redis_connection_error,
     ):
         assert not set(

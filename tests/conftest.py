@@ -4,7 +4,7 @@ import fakeredis
 import pytest
 from _pytest.fixtures import SubRequest
 
-from app.common.helpers import read_html_file, read_json_file
+from app.utils.helpers import read_html_file, read_json_file
 
 
 @pytest.fixture(scope="session")
@@ -18,9 +18,9 @@ def _patch_before_every_test(redis_server: fakeredis.FakeStrictRedis):
     redis_server.flushdb()
 
     with (
-        patch("app.common.helpers.settings.discord_webhook_enabled", False),
+        patch("app.utils.helpers.settings.discord_webhook_enabled", False),
         patch(
-            "app.common.cache_manager.CacheManager.redis_server",
+            "app.database.cache_manager.CacheManager.redis_server",
             redis_server,
         ),
     ):

@@ -5,9 +5,9 @@ import httpx
 import pytest
 from fastapi import HTTPException, status
 
-from app.common.enums import SearchDataType
-from app.common.exceptions import ParserParsingError
-from app.common.helpers import overfast_client
+from app.utils.enums import SearchDataType
+from app.api.exceptions import ParserParsingError
+from app.utils.helpers import overfast_client
 from app.parsers.search_data_parser import NamecardParser
 
 
@@ -108,7 +108,7 @@ async def test_namecard_parser_player_not_found():
             "get",
             return_value=Mock(status_code=status.HTTP_200_OK, text="{}", json=dict),
         ),
-        patch("app.common.logging.logger.warning", logger_warning_mock),
+        patch("app.utils.logging.logger.warning", logger_warning_mock),
     ):
         await parser.parse()
 
@@ -147,7 +147,7 @@ async def test_namecard_parser_player_without_namecard():
                 json=lambda: search_data,
             ),
         ),
-        patch("app.common.logging.logger.info", logger_info_mock),
+        patch("app.utils.logging.logger.info", logger_info_mock),
     ):
         await parser.parse()
 
@@ -177,7 +177,7 @@ async def test_namecard_parser_no_cache_no_namecard(
         ),
         patch("httpx.get", side_effect=httpx.RequestError("error")),
         patch(
-            "app.common.logging.logger.warning",
+            "app.utils.logging.logger.warning",
             logger_warning_mock,
         ),
     ):

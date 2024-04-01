@@ -6,8 +6,8 @@ from app.commands.check_and_delete_parser_cache import get_soon_expired_cache_ke
 from app.commands.check_and_delete_parser_cache import (
     main as check_and_delete_parser_cache_main,
 )
-from app.common.cache_manager import CacheManager
-from app.common.enums import Locale
+from app.database.cache_manager import CacheManager
+from app.utils.enums import Locale
 from app.config import settings
 
 
@@ -92,7 +92,7 @@ def test_check_and_delete_parser_cache_some_to_delete(
 
     # check and delete, we should delete the first player
     logger_info_mock = Mock()
-    with patch("app.common.logging.logger.info", logger_info_mock):
+    with patch("app.utils.logging.logger.info", logger_info_mock):
         check_and_delete_parser_cache_main()
 
     # Check data in db (assert we created API Cache for subroutes)
@@ -128,7 +128,7 @@ def test_check_and_delete_parser_cache_no_cache_to_delete(
     with (
         pytest.raises(SystemExit),
         patch(
-            "app.common.logging.logger.info",
+            "app.utils.logging.logger.info",
             logger_info_mock,
         ),
     ):

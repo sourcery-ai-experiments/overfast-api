@@ -5,11 +5,11 @@ import re
 
 import httpx
 
-from app.common.cache_manager import CacheManager
-from app.common.enums import Locale, SearchDataType
-from app.common.exceptions import SearchDataRetrievalError
-from app.common.helpers import send_discord_webhook_message
-from app.common.logging import logger
+from app.database.cache_manager import CacheManager
+from app.utils.enums import Locale, SearchDataType
+from app.api.exceptions import SearchDataRetrievalError
+from app.utils.helpers import send_discord_webhook_message
+from app.utils.logging import logger
 from app.config import settings
 
 # Generic cache manager used in the process

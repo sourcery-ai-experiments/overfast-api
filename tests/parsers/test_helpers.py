@@ -1,6 +1,6 @@
 import pytest
 
-from app.common.enums import CompetitiveDivision, CompetitiveRole, HeroKey
+from app.utils.enums import CompetitiveDivision, CompetitiveRole, HeroKey
 from app.config import settings
 from app.parsers import helpers
 
